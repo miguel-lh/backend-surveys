@@ -1,14 +1,44 @@
+# encoding: utf-8
+import os
+import pandas as pd
+
+from django.conf import settings
+from django.http import FileResponse
 from django.utils import timezone
 from django.core.exceptions import ImproperlyConfigured
 from django_filters.rest_framework import DjangoFilterBackend
+
 from rest_framework import status, filters, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import MethodNotAllowed
 
-from ..models import Surveys
-from .serializers import ListSurveysSerializer, SurveysSerializer
+from ..models import Surveys, SurveyComments
+from .serializers import ListSurveysSerializer, SurveysSerializer, CommentsSerialier, CommentsOnSerialier
+
+
+
+class SurveyCommentsViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentsSerialier
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, ]
+    queryset = SurveyComments.objects.all()
+    lookup_field = 'slug'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method != 'POST':
+            raise MethodNotAllowed(request.method)
+        return super().dispatch(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        # Obtener el usuario que está creando la encuesta
+        user = self.request.user
+
+        # Crear la instancia y guardar el usuario que realiza la creación
+        instance = serializer.save(user=user)
+        instance.save()
 
 
 class SurveysViewSet(viewsets.ModelViewSet):
@@ -62,3 +92,80 @@ class SurveysViewSet(viewsets.ModelViewSet):
 
         # Retornar la respuesta exitosa sin eliminar físicamente
         return Response({'message': 'La encuenta se cancelo'}, status=status.HTTP_200_OK)
+
+    @action(methods=['GET'], detail=True, permission_classes=[IsAuthenticated])
+    def comments(self, request, slug=None):
+        instance =  self.get_object()
+
+        comments = instance.comments.all().order_by('-id')
+        serializer = CommentsOnSerialier(comments, many=True)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+    
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def export(self, request, slug=None):
+        # Filtrar por rango de fechas (start_date y end_date como query params)
+        search = request.query_params.get('search', None)
+        type = request.query_params.get('type', None)
+        
+        
+        filters = {
+            'id__icontains': search,
+            'type__exact': type,
+        }
+
+        qfilters = {k: v for k, v in filters.items() if v is not None}
+
+
+        # Ruta del archivo
+        output_dir = str(settings.OUTPUT_FILES)
+        dir_output_file = os.path.join(output_dir, 'encuestas.xlsx')
+
+        # Verificar si la carpeta existe, si no, crearla
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+
+        results = Surveys.objects.filter(**qfilters)
+
+        # Definir nombres personalizados de columnas
+        custom_column_names = {
+            'id': "FOLIO",
+            'created_at': 'FECHA DE CREACIÓN',
+            'type': 'TIPO',
+            'description': 'DESCRIPCIÓN',
+            'name': 'NOMBRE',
+            'phone': 'CELULAR',
+            'status': 'ESTATUS',
+        }
+
+        # Convertir el queryset en una lista de diccionarios directamente
+        serialized_data = ListSurveysSerializer(results, many=True).data
+        rows = [
+            {
+                'id': result.id,
+                'created_at': result.created_at.strftime('%d-%m-%Y'),
+                'type': result.get_type_display(),
+                'description': result.description,
+                'name': result.name,
+                'phone': result.phone,
+                'status': result.get_status_display(),
+            }
+            for result in results
+        ]
+
+        # Convertir los datos serializados a un DataFrame de pandas
+        df = pd.DataFrame(serialized_data).rename(columns=custom_column_names)
+
+        # Exportar los datos a un archivo Excel
+        df.to_excel(dir_output_file, index=False)
+
+        # Verificar que el archivo se ha creado correctamente
+        if os.path.exists(dir_output_file):
+            # Abrir el archivo sin usar el bloque 'with' para que no se cierre automáticamente
+            file_handle = open(dir_output_file, 'rb')
+            response = FileResponse(file_handle, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = f'attachment; filename="encuestas.xlsx"'
+            return response
+        else:
+            return Response({"error": "El archivo no pudo ser creado."}, status=400)

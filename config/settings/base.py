@@ -371,3 +371,8 @@ DRF_API_LOGGER_SIGNAL = True
 DRF_API_LOGGER_SLOW_API_ABOVE = 200 # Identify slow APIs
 # DRF_API_LOGGER_PATH_TYPE = 'RAW_URI' # Specify an endpoint of API should have absolute
 DRF_LOGGER_METHODS = ['POST', 'GET', 'PUT', 'PATCH', 'DELETE']
+
+
+# Reports
+# -------------------------------------------------------------------------------
+OUTPUT_FILES = BASE_DIR / 'files/'
