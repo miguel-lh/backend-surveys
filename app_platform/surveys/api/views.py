@@ -11,7 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, filters, viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import MethodNotAllowed
 
@@ -55,6 +55,12 @@ class SurveysViewSet(viewsets.ModelViewSet):
     filterset_fields = { 'type', }
     lookup_field = 'slug'
 
+    def get_permissions(self):
+        if self.action == 'create':  # Permitir acceso a usuarios no autenticados en `POST`
+            return [AllowAny()]
+        return [IsAuthenticated()]
+    
+
     def get_serializer_class(self):
         if not isinstance(self.serializer_classes, dict):
             raise ImproperlyConfigured("serializer_classes should be a dict mapping.")
@@ -65,11 +71,10 @@ class SurveysViewSet(viewsets.ModelViewSet):
     
     def perform_create(self, serializer):
         # Obtener el usuario que está creando la encuesta
-        user = self.request.user
+        user = self.request.user if self.request.user.is_authenticated else None
+        serializer.save(created_by=user)
 
-        # Crear la instancia y guardar el usuario que realiza la creación
-        instance = serializer.save(created_by=user)
-        instance.save()
+
 
     def perform_update(self, serializer):
         # Obtenemos el usuario que está realizando la actualización
