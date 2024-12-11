@@ -26,7 +26,7 @@ class ListSurveysSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Surveys
-        fields = ("folio", "slug", "created_at", "type", "description", "name", "phone", "status")
+        fields = ("folio", "slug", "created_at", "type", "description", "contact_name", "contact_phone", "status")
         read_only = (fields, )
 
 

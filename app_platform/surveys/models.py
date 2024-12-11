@@ -20,11 +20,11 @@ class Surveys(models.Model):
     deleted_at = models.DateTimeField(_('Eliminado'), null=True, blank=True)
     deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='deleted_surveys')
 
-    name = models.CharField(_('Nombre'), max_length=2000)
+    
     description = models.TextField(_('Descripcion'), null=True, blank=True)
     type = models.CharField(_('Tipo'), choices=TYPE_SURVEYS, )
-    status = models.CharField(_('Tipo'), choices=STATUS_SURVEYS, default='IN_PROGRESS')
-    phone = models.CharField(_('Telefono'), max_length=10)
+    status = models.CharField(_('Tipo'), choices=STATUS_SURVEYS, default='IN_PROGRESS', null=True, blank=True)
+    
     
     # Tipos y sub tipos solo aplican de acuerdo al tipo 
     type_2 = models.CharField(_('Tipo 2'), choices=TYPE_2_SURVEYS, null=True, blank=True)
