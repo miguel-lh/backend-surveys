@@ -16,9 +16,17 @@ class CommentsSerialier(serializers.ModelSerializer):
 
 
 class CommentsOnSerialier(serializers.ModelSerializer):
+    user_name = serializers.SerializerMethodField()
+
+
     class Meta:
         model = SurveyComments
         exclude = ('survey',)
+
+    def get_user_name(self, obj):
+        if obj.user:  # Verifica si el usuario está asignado
+            return obj.user.name
+        return "Usuario no asignado"
 
 
 class ListSurveysSerializer(serializers.ModelSerializer):
