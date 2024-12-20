@@ -17,7 +17,7 @@ from rest_framework.exceptions import MethodNotAllowed
 
 from ..models import Surveys, SurveyComments
 from .serializers import ListSurveysSerializer, SurveysSerializer, CommentsSerialier, CommentsOnSerialier
-
+from .filters import SurveysFilter
 
 
 class SurveyCommentsViewSet(viewsets.ModelViewSet):
@@ -52,7 +52,7 @@ class SurveysViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter,  filters.OrderingFilter, DjangoFilterBackend]
     ordering = ('-created_at')
     search_fields = ['id',]
-    filterset_fields = { 'type', }
+    filterset_class = SurveysFilter
     lookup_field = 'slug'
 
     def get_permissions(self):
@@ -73,8 +73,6 @@ class SurveysViewSet(viewsets.ModelViewSet):
         # Obtener el usuario que está creando la encuesta
         user = self.request.user if self.request.user.is_authenticated else None
         serializer.save(created_by=user)
-
-
 
     def perform_update(self, serializer):
         # Obtenemos el usuario que está realizando la actualización
@@ -112,11 +110,15 @@ class SurveysViewSet(viewsets.ModelViewSet):
         # Filtrar por rango de fechas (start_date y end_date como query params)
         search = request.query_params.get('search', None)
         type = request.query_params.get('type', None)
+        start_date = request.query_params.get('start_date', None)
+        end_date = request.query_params.get('end_date', None)
         
         
         filters = {
             'id__icontains': search,
             'type__exact': type,
+            'created_at__gte': start_date,
+            'created_at__lte': end_date
         }
 
         qfilters = {k: v for k, v in filters.items() if v is not None}
