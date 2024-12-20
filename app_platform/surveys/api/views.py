@@ -154,8 +154,8 @@ class SurveysViewSet(viewsets.ModelViewSet):
                 'created_at': result.created_at.strftime('%d-%m-%Y'),
                 'type': result.get_type_display(),
                 'description': result.description,
-                'name': result.name,
-                'phone': result.phone,
+                'name': result.contact_name,
+                'phone': result.contact_phone,
                 'status': result.get_status_display(),
             }
             for result in results
