@@ -1,7 +1,17 @@
 # PostgreSQL
 # ------------------------------------------------------------------------------
-POSTGRES_HOST=postgres
+# POSTGRES_HOST=postgres
+# POSTGRES_PORT=5432
+# POSTGRES_DB=app_platform
+# POSTGRES_USER=mFXPxDtobNQXmrBLBfBBwGScMcGwhsKg
+# POSTGRES_PASSWORD=GTKMAj4XQj2XWcTQiTIHYGloR1qsjd3hoiQRYU8P4swqGj4xCU1UO36ObCDdoZqe
+
+
+
+# PostgreSQL - DEV
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=db-surveys.cqthlflxetf6.us-west-2.rds.amazonaws.com
 POSTGRES_PORT=5432
-POSTGRES_DB=app_platform
-POSTGRES_USER=mFXPxDtobNQXmrBLBfBBwGScMcGwhsKg
-POSTGRES_PASSWORD=GTKMAj4XQj2XWcTQiTIHYGloR1qsjd3hoiQRYU8P4swqGj4xCU1UO36ObCDdoZqe
+POSTGRES_DB=development
+POSTGRES_USER=platform_master
+POSTGRES_PASSWORD=pfWgW9ckp
