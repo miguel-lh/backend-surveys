@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+import pytz
 from rest_framework import serializers
 
 from ..models import Surveys, SurveyComments
@@ -41,7 +41,10 @@ class ListSurveysSerializer(serializers.ModelSerializer):
         read_only = (fields, )
 
     def get_created_at(self, obj):
-        return obj.created_at.strftime('%Y-%m-%d %H:%M')
+        mexico_tz = pytz.timezone('America/Mexico_City')
+        fecha_mexico = obj.created_at.astimezone(mexico_tz)
+
+        return fecha_mexico.strftime('%Y-%m-%d %H:%M')
 
     def get_type(self, obj):
         if obj.type:

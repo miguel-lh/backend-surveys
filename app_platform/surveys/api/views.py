@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 
+
 from django.conf import settings
 from django.http import FileResponse
 from django.utils import timezone
@@ -150,19 +151,7 @@ class SurveysViewSet(viewsets.ModelViewSet):
 
         # Convertir el queryset en una lista de diccionarios directamente
         serialized_data = ListSurveysSerializer(results, many=True).data
-        # rows = [
-        #     {
-        #         'id': result.id,
-        #         'created_at': result.created_at.strftime('%d-%m-%Y'),
-        #         'type': result.get_type_display(),
-        #         'description': result.description,
-        #         'name': result.contact_name,
-        #         'phone': result.contact_phone,
-        #         'email': result.contact_email,
-        #         'status': result.get_status_display(),
-        #     }
-        #     for result in results
-        # ]
+
 
         # Convertir los datos serializados a un DataFrame de pandas
         df = pd.DataFrame(serialized_data).rename(columns=custom_column_names)
