@@ -137,29 +137,32 @@ class SurveysViewSet(viewsets.ModelViewSet):
 
         # Definir nombres personalizados de columnas
         custom_column_names = {
-            'id': "FOLIO",
+            'folio': "FOLIO",
+            'slug': "SLUG",
             'created_at': 'FECHA DE CREACIÓN',
             'type': 'TIPO',
             'description': 'DESCRIPCIÓN',
             'name': 'NOMBRE',
             'phone': 'CELULAR',
+            'email': 'CORREO',
             'status': 'ESTATUS',
         }
 
         # Convertir el queryset en una lista de diccionarios directamente
         serialized_data = ListSurveysSerializer(results, many=True).data
-        rows = [
-            {
-                'id': result.id,
-                'created_at': result.created_at.strftime('%d-%m-%Y'),
-                'type': result.get_type_display(),
-                'description': result.description,
-                'name': result.contact_name,
-                'phone': result.contact_phone,
-                'status': result.get_status_display(),
-            }
-            for result in results
-        ]
+        # rows = [
+        #     {
+        #         'id': result.id,
+        #         'created_at': result.created_at.strftime('%d-%m-%Y'),
+        #         'type': result.get_type_display(),
+        #         'description': result.description,
+        #         'name': result.contact_name,
+        #         'phone': result.contact_phone,
+        #         'email': result.contact_email,
+        #         'status': result.get_status_display(),
+        #     }
+        #     for result in results
+        # ]
 
         # Convertir los datos serializados a un DataFrame de pandas
         df = pd.DataFrame(serialized_data).rename(columns=custom_column_names)

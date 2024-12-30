@@ -31,11 +31,25 @@ class CommentsOnSerialier(serializers.ModelSerializer):
 
 class ListSurveysSerializer(serializers.ModelSerializer):
     folio = serializers.IntegerField(source='id', read_only=True)
+    created_at = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Surveys
-        fields = ("folio", "slug", "created_at", "type", "description", "contact_name", "contact_phone", "status")
+        fields = ("folio", "slug", "created_at", "type", "description", "contact_name", "contact_phone", "contact_email", "status")
         read_only = (fields, )
+
+    def get_created_at(self, obj):
+        return obj.created_at.strftime('%Y-%m-%d %H:%M')
+
+    def get_type(self, obj):
+        if obj.type:
+            return obj.get_type_display()
+        
+    def get_status(self, obj):
+        if obj.status:
+            return obj.get_status_display()
 
 
 class SurveysSerializer(serializers.ModelSerializer):
