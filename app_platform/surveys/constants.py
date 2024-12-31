@@ -21,6 +21,7 @@ TYPE_SURVEYS = (
 )
 
 STATUS_SURVEYS = (
+    ('PENDING', 'Pendiente'),
     ('IN_PROGRESS', 'En proceso'),
     ('CANCELED', 'Cancelada'),
     ('FINISHED', 'Finalizada'),

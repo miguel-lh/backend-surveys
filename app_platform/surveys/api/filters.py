@@ -36,7 +36,7 @@ class SurveysFilter(filters.FilterSet):
 
     class Meta:
         model = Surveys
-        fields = ['type', 'start_date', 'end_date']
+        fields = ['type', 'start_date', 'end_date', 'status']
 
     def filter_start_date(self, queryset, name, value):
         # Convierte la fecha de inicio al inicio del día en la zona horaria local y luego a UTC

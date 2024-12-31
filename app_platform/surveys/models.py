@@ -23,7 +23,7 @@ class Surveys(models.Model):
     
     description = models.TextField(_('Descripcion'), null=True, blank=True)
     type = models.CharField(_('Tipo'), choices=TYPE_SURVEYS, )
-    status = models.CharField(_('Tipo'), choices=STATUS_SURVEYS, default='IN_PROGRESS', null=True, blank=True)
+    status = models.CharField(_('Tipo'), choices=STATUS_SURVEYS, default='PENDING', null=True, blank=True)
     
     
     # Tipos y sub tipos solo aplican de acuerdo al tipo 
