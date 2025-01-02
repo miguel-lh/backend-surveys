@@ -32,7 +32,7 @@ class CommentsOnSerialier(serializers.ModelSerializer):
 class ListSurveysSerializer(serializers.ModelSerializer):
     folio = serializers.IntegerField(source='id', read_only=True)
     created_at = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
+    # status = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
 
     class Meta:
@@ -50,9 +50,9 @@ class ListSurveysSerializer(serializers.ModelSerializer):
         if obj.type:
             return obj.get_type_display()
         
-    def get_status(self, obj):
-        if obj.status:
-            return obj.get_status_display()
+    # def get_status(self, obj):
+    #     if obj.status:
+    #         return obj.get_status_display()
 
 
 class SurveysSerializer(serializers.ModelSerializer):

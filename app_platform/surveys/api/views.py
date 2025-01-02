@@ -15,6 +15,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.exceptions import MethodNotAllowed
+from rest_framework import status as response_status
 
 from ..models import Surveys, SurveyComments
 from .serializers import ListSurveysSerializer, SurveysSerializer, CommentsSerialier, CommentsOnSerialier
@@ -105,6 +106,28 @@ class SurveysViewSet(viewsets.ModelViewSet):
         serializer = CommentsOnSerialier(comments, many=True)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
     
+    @action(detail=True, methods=['patch'], url_path='update-status')
+    def update_status(self, request, slug=None):
+        # Obtener el objeto correspondiente al slug
+        survey = self.get_object()
+
+        # Validar que el atributo 'status' esté presente en el cuerpo de la solicitud
+        new_status = request.data.get('status')
+        if not new_status:
+            return Response(
+                {"error": "El campo 'status' es obligatorio."},
+                status=response_status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Actualizar el atributo `status`
+        survey.status = new_status
+        survey.save()
+
+        return Response(
+            {"message": "Estatus actualizado correctamente.", "status": survey.status},
+            status=response_status.HTTP_200_OK,
+        )
+
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def export(self, request, slug=None):
