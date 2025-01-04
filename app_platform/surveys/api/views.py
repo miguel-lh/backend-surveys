@@ -53,7 +53,7 @@ class SurveysViewSet(viewsets.ModelViewSet):
     }
     filter_backends = [filters.SearchFilter,  filters.OrderingFilter, DjangoFilterBackend]
     ordering = ('-created_at')
-    search_fields = ['id',]
+    search_fields = ['id', 'contact_name', 'contact_phone', 'contact_email',]
     filterset_class = SurveysFilter
     lookup_field = 'slug'
 
@@ -109,7 +109,7 @@ class SurveysViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['patch'], url_path='update-status')
     def update_status(self, request, slug=None):
         # Obtener el objeto correspondiente al slug
-        survey = self.get_object()
+        instance = self.get_object()
 
         # Validar que el atributo 'status' esté presente en el cuerpo de la solicitud
         new_status = request.data.get('status')
@@ -120,11 +120,40 @@ class SurveysViewSet(viewsets.ModelViewSet):
             )
 
         # Actualizar el atributo `status`
-        survey.status = new_status
-        survey.save()
+        instance.status = new_status
+
+        if new_status == 'CANCELED':
+            instance.date_status_to_cancelled=timezone.now()
+        elif new_status == 'FINISHED':
+            instance.date_status_to_finalized=timezone.now()
+
+
+        instance.save()
 
         return Response(
-            {"message": "Estatus actualizado correctamente.", "status": survey.status},
+            {"message": "Estatus actualizado correctamente.", "status": instance.status},
+            status=response_status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=['patch'], url_path='update-route')
+    def update_route(self, request, slug=None):
+        # Obtener el objeto correspondiente al slug
+        instance = self.get_object()
+
+        # Validar que el atributo 'status' esté presente en el cuerpo de la solicitud
+        new_route = request.data.get('route')
+
+        user = self.request.user
+
+        # Actualizar el atributo `status`
+        instance.route = new_route
+        instance.update_at = timezone.now()  # Actualizamos la fecha de la última actualización
+        instance.update_by = user  # Establecemos el usuario que realizó la actualización
+        instance.save()
+
+
+        return Response(
+            {"message": "Ruta actualizado correctamente.", "route": instance.route},
             status=response_status.HTTP_200_OK,
         )
 

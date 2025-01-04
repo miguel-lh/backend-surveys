@@ -25,10 +25,15 @@ class Surveys(models.Model):
     type = models.CharField(_('Tipo'), choices=TYPE_SURVEYS, )
     status = models.CharField(_('Tipo'), choices=STATUS_SURVEYS, default='PENDING', null=True, blank=True)
     
-    
+    date_status_to_cancelled  = models.DateTimeField(_('Fecha de cancelacion'), null=True, blank=True)
+    date_status_to_finalized  = models.DateTimeField(_('Fecha de finalizado'), null=True, blank=True)
+
+
     # Tipos y sub tipos solo aplican de acuerdo al tipo 
     type_2 = models.CharField(_('Tipo 2'), choices=TYPE_2_SURVEYS, null=True, blank=True)
     type_3 = models.CharField(_('Tipo 3'), choices=TYPE_3_SURVEYS, null=True, blank=True)
+
+    route = models.CharField(_('Ruta'), null=True, blank=True)
 
     # Datos del contacto solo aplican para el tipo de sugerencia
     contact_name = models.CharField(_('Nombre del contacto'), max_length=2000, null=True, blank=True)

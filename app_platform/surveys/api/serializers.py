@@ -37,7 +37,7 @@ class ListSurveysSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Surveys
-        fields = ("folio", "slug", "created_at", "type", "description", "contact_name", "contact_phone", "contact_email", "status")
+        fields = ("folio", "slug", "created_at", "type", "description", "contact_name", "contact_phone", "contact_email", "status", "date_status_to_cancelled", "date_status_to_finalized")
         read_only = (fields, )
 
     def get_created_at(self, obj):
