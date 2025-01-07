@@ -4,6 +4,7 @@ from uuid import uuid4
 from django.db import models
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
+from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
 
 from simple_history.models import HistoricalRecords
@@ -20,7 +21,7 @@ class Surveys(models.Model):
     deleted_at = models.DateTimeField(_('Eliminado'), null=True, blank=True)
     deleted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='deleted_surveys')
 
-    
+    folio = models.CharField(_('Folio'), max_length=255, unique=True, blank=True, null=True)
     description = models.TextField(_('Descripcion'), null=True, blank=True)
     type = models.CharField(_('Tipo'), choices=TYPE_SURVEYS, )
     status = models.CharField(_('Tipo'), choices=STATUS_SURVEYS, default='PENDING', null=True, blank=True)
@@ -50,9 +51,54 @@ class Surveys(models.Model):
     def __str__(self):
         return f'# {self.id}'
     
+
+    def save(self, *args, **kwargs):
+        if not self.folio:
+            # Define prefijos para cada tipo
+            prefix_map = {
+                'COMPLAINT': 'Q',
+                'SUGGESTION': 'S',
+                'CONGRATULATION': 'F'
+            }
+            
+            # Obtén el prefijo correspondiente al tipo
+            prefix = prefix_map.get(self.type, '')
+            if prefix:
+                # Encuentra el máximo consecutivo existente para el tipo
+                max_folio = Surveys.objects.filter(type=self.type).aggregate(Max('folio'))
+                max_folio_value = max_folio['folio__max']
+                
+                # Extraer el número del folio anterior
+                if max_folio_value:
+                    last_consecutive = int(max_folio_value.lstrip(prefix))
+                else:
+                    last_consecutive = 0
+                
+                # Generar nuevo folio
+                new_consecutive = last_consecutive + 1
+                self.folio = f"{prefix}{new_consecutive}"
+            
+        super().save(*args, **kwargs)
+    
     class Meta:
         verbose_name='Encuenta'
         verbose_name_plural='Encuestas'
+
+
+    # @property
+    # def folio(self):
+    #     if self.type == 'COMPLAINT':
+    #         return f'Q-{self.id}'
+        
+    #     elif self.type == 'SUGGESTION':
+    #         return f'S-{self.id}'
+        
+    #     elif self.type == 'CONGRATULATION':
+    #         return f'F-{self.id}'
+        
+
+    #     return f'-{self.id}'
+        
 
 
 class SurveyComments(models.Model):

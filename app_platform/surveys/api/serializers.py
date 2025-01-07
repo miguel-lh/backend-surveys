@@ -30,7 +30,7 @@ class CommentsOnSerialier(serializers.ModelSerializer):
 
 
 class ListSurveysSerializer(serializers.ModelSerializer):
-    folio = serializers.IntegerField(source='id', read_only=True)
+    folio = serializers.CharField(read_only=True)
     created_at = serializers.SerializerMethodField()
     # status = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
@@ -56,7 +56,7 @@ class ListSurveysSerializer(serializers.ModelSerializer):
 
 
 class SurveysSerializer(serializers.ModelSerializer):
-    folio = serializers.IntegerField(source='id', read_only=True)
+    folio = serializers.CharField(read_only=True)
 
     class Meta:
         model = Surveys
