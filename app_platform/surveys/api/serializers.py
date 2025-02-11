@@ -5,7 +5,13 @@ from rest_framework import serializers
 from ..models import Surveys, SurveyComments
 
 
+
 class CommentsSerialier(serializers.ModelSerializer):
+
+    survey = serializers.SlugRelatedField(
+        queryset=Surveys.objects.all(),  # Consulta para obtener la instancia de Survey.
+        slug_field='folio'              # Campo único que se usará para la relación.
+    )
     class Meta:
         model = SurveyComments
         exclude = ()
@@ -68,9 +74,8 @@ class SurveyFolioRelatedField(serializers.PrimaryKeyRelatedField):
             raise serializers.ValidationError(f'No se encontró una encuesta con el folio "{data}".')
         
 class SurveysSerializer(serializers.ModelSerializer):
-    # folio = serializers.CharField(read_only=True)
-    survey = SurveyFolioRelatedField(queryset=Surveys.objects.all())
-
+    folio = serializers.CharField(read_only=True)
+    
     class Meta:
         model = Surveys
         exclude = ('id',)
