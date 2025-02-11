@@ -19,6 +19,7 @@ CORS_ALLOWED_ORIGINS = [
     "https://atencionaclientes.vaissen.com",
     "http://atencionaclientes.vaissen.com",
     "https://atencionaclientes-vaissen.vercel.app",
+    "http://atencionaclientes-vaissen.vercel.app",
 ]
 
 

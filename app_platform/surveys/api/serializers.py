@@ -55,8 +55,21 @@ class ListSurveysSerializer(serializers.ModelSerializer):
     #         return obj.get_status_display()
 
 
+class SurveyFolioRelatedField(serializers.PrimaryKeyRelatedField):
+    """
+    Campo relacionado personalizado que permite recibir el folio de la encuesta
+    y buscar la instancia correspondiente.
+    """
+    def to_internal_value(self, data):
+        # Intentamos obtener la encuesta por su atributo 'folio'
+        try:
+            return self.get_queryset().get(folio=data)
+        except Surveys.DoesNotExist:
+            raise serializers.ValidationError(f'No se encontró una encuesta con el folio "{data}".')
+        
 class SurveysSerializer(serializers.ModelSerializer):
-    folio = serializers.CharField(read_only=True)
+    # folio = serializers.CharField(read_only=True)
+    survey = SurveyFolioRelatedField(queryset=Surveys.objects.all())
 
     class Meta:
         model = Surveys
