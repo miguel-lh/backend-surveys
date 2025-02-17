@@ -38,14 +38,21 @@ class CommentsOnSerialier(serializers.ModelSerializer):
 class ListSurveysSerializer(serializers.ModelSerializer):
     folio = serializers.CharField(read_only=True)
     created_at = serializers.SerializerMethodField()
-    # status = serializers.SerializerMethodField()
+    route = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
 
     class Meta:
         model = Surveys
-        fields = ("folio", "slug", "created_at", "type", "description", "contact_name", "contact_phone", "contact_email", "status", "date_status_to_cancelled", "date_status_to_finalized")
+        fields = ("folio", "slug", "created_at", "route", "type", "description", "contact_name", "contact_phone", "contact_email", "status", "date_status_to_cancelled", "date_status_to_finalized")
         read_only = (fields, )
 
+    def get_route(self, obj):
+        if obj.route:
+            return obj.route
+        
+        return 'No asignado'
+    
+    
     def get_created_at(self, obj):
         mexico_tz = pytz.timezone('America/Mexico_City')
         fecha_mexico = obj.created_at.astimezone(mexico_tz)

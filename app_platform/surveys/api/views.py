@@ -74,6 +74,9 @@ class SurveysViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Obtener el usuario que está creando la encuesta
         user = self.request.user if self.request.user.is_authenticated else None
+        user = self.request.user if self.request.user else None
+
+        
         serializer.save(created_by=user)
 
     def perform_update(self, serializer):
