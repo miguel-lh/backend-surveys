@@ -10,18 +10,18 @@
 
 # PostgreSQL - DEV
 # ------------------------------------------------------------------------------
-# POSTGRES_HOST=db-surveys.cqthlflxetf6.us-west-2.rds.amazonaws.com
-# POSTGRES_PORT=5432
-# POSTGRES_DB=development
-# POSTGRES_USER=platform_master
-# POSTGRES_PASSWORD=pfWgW9ckp
+POSTGRES_HOST=db-surveys.cqthlflxetf6.us-west-2.rds.amazonaws.com
+POSTGRES_PORT=5432
+POSTGRES_DB=development
+POSTGRES_USER=platform_master
+POSTGRES_PASSWORD=pfWgW9ckp
 
 
 
 # PostgreSQL - PROD
 # ------------------------------------------------------------------------------
-POSTGRES_HOST=db-surveys.cqthlflxetf6.us-west-2.rds.amazonaws.com
-POSTGRES_PORT=5432
-POSTGRES_DB=production
-POSTGRES_USER=platform_master
-POSTGRES_PASSWORD=pfWgW9ckp
+# POSTGRES_HOST=db-surveys.cqthlflxetf6.us-west-2.rds.amazonaws.com
+# POSTGRES_PORT=5432
+# POSTGRES_DB=production
+# POSTGRES_USER=platform_master
+# POSTGRES_PASSWORD=pfWgW9ckp
