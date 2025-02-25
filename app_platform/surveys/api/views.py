@@ -163,21 +163,21 @@ class SurveysViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
     def export(self, request, slug=None):
-        # Filtrar por rango de fechas (start_date y end_date como query params)
-        search = request.query_params.get('search', None)
-        type = request.query_params.get('type', None)
-        start_date = request.query_params.get('start_date', None)
-        end_date = request.query_params.get('end_date', None)
+        # # Filtrar por rango de fechas (start_date y end_date como query params)
+        # search = request.query_params.get('search', None)
+        # type = request.query_params.get('type', None)
+        # start_date = request.query_params.get('start_date', None)
+        # end_date = request.query_params.get('end_date', None)
         
         
-        filters = {
-            'id__icontains': search,
-            'type__exact': type,
-            'created_at__gte': start_date,
-            'created_at__lte': end_date
-        }
+        # filters = {
+        #     'id__icontains': search,
+        #     'type__exact': type,
+        #     'created_at__gte': start_date,
+        #     'created_at__lte': end_date
+        # }
 
-        qfilters = {k: v for k, v in filters.items() if v is not None}
+        # qfilters = {k: v for k, v in filters.items() if v is not None}
 
 
         # Ruta del archivo
@@ -189,7 +189,9 @@ class SurveysViewSet(viewsets.ModelViewSet):
             os.makedirs(output_dir)
 
 
-        results = Surveys.objects.filter(**qfilters)
+        # results = Surveys.objects.filter(**qfilters)
+        # Aplicar los filtros activos en la vista
+        results = self.filter_queryset(self.get_queryset())
 
         # Definir nombres personalizados de columnas
         custom_column_names = {

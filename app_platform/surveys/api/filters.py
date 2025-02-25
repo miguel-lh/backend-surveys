@@ -35,7 +35,7 @@ class SurveysFilter(filters.FilterSet):
     start_date = filters.DateFilter(method='filter_start_date', label="Fecha de inicio")
     end_date = filters.DateFilter(method='filter_end_date', label="Fecha final")
 
-    category = filters.DateFilter(method='filter_category', label="Categoria")
+    category = filters.CharFilter(method='filter_category', label="Categoria")
 
     class Meta:
         model = Surveys
