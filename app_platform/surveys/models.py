@@ -70,7 +70,7 @@ class Surveys(models.Model):
                 
                 # Extraer el número del folio anterior
                 if max_folio_value:
-                    last_consecutive = int(max_folio_value.lstrip(prefix))
+                    last_consecutive = int(max_folio_value.lstrip(prefix)) + 1 
                 else:
                     last_consecutive = 0
                 
