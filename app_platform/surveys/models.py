@@ -1,8 +1,8 @@
 # encoding: utf-8
+import re
 from uuid import uuid4
 
-from django.db import models
-from django.utils import timezone
+from django.db import models, transaction
 from simple_history.models import HistoricalRecords
 from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
@@ -52,33 +52,26 @@ class Surveys(models.Model):
         return f'# {self.id}'
     
 
-    def save(self, *args, **kwargs):
-        if not self.folio:
-            # Define prefijos para cada tipo
-            prefix_map = {
-                'COMPLAINT': 'Q',
-                'SUGGESTION': 'S',
-                'CONGRATULATION': 'F'
-            }
-            
-            # Obtén el prefijo correspondiente al tipo
-            prefix = prefix_map.get(self.type, '')
-            if prefix:
-                # Encuentra el máximo consecutivo existente para el tipo
-                max_folio = Surveys.objects.filter(type=self.type).aggregate(Max('folio'))
-                max_folio_value = max_folio['folio__max']
-                
-                # Extraer el número del folio anterior
-                if max_folio_value:
-                    last_consecutive = int(max_folio_value.lstrip(prefix)) + 1 
-                else:
-                    last_consecutive = 0
-                
-                # Generar nuevo folio
-                new_consecutive = last_consecutive + 1
-                self.folio = f"{prefix}{new_consecutive}"
-            
-        super().save(*args, **kwargs)
+    @classmethod
+    def get_next_folio(cls, survey_type):
+        """ Obtiene el próximo folio disponible para el tipo de encuesta. """
+        prefix_map = {'COMPLAINT': 'Q', 'SUGGESTION': 'S', 'CONGRATULATION': 'F'}
+
+        prefix = prefix_map.get(survey_type)
+        if not prefix:
+            return None
+
+        if not prefix:
+            return None  # No genera folio si el tipo es inválido
+
+        with transaction.atomic():
+            # Obtiene el folio numérico más alto sin usar `Substring`
+            max_folio = cls.objects.filter(type=survey_type, folio__startswith=prefix).values_list('folio', flat=True)
+
+            # Extrae solo los números después del prefijo usando Regex
+            max_number = max([int(re.sub(r'\D', '', f)) for f in max_folio if re.sub(r'\D', '', f).isdigit()], default=0)
+
+            return f"{prefix}{max_number + 1}"
     
     class Meta:
         verbose_name='Encuenta'
