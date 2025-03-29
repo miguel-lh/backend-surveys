@@ -51,13 +51,24 @@ class Surveys(models.Model):
     def __str__(self):
         return f'# {self.id}'
     
+    def get_prefix(self, type):
+        if type == 'COMPLAINT':
+            return 'Q'
+        elif type == 'SUGGESTION':
+            return 'S'
+        elif type == 'CONGRATULATION':
+            return 'F'
+        
+        return 'N/A'
 
     @classmethod
     def get_next_folio(cls, survey_type):
         """ Obtiene el próximo folio disponible para el tipo de encuesta. """
         prefix_map = {'COMPLAINT': 'Q', 'SUGGESTION': 'S', 'CONGRATULATION': 'F'}
+        
 
-        prefix = prefix_map.get(survey_type)
+        prefix = cls.get_prefix(cls.type)
+        
         if not prefix:
             return None
 
