@@ -36,7 +36,6 @@ class CommentsOnSerialier(serializers.ModelSerializer):
 
 
 class ListSurveysSerializer(serializers.ModelSerializer):
-    folio = serializers.CharField(read_only=True)
     created_at = serializers.SerializerMethodField()
     route = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
@@ -81,7 +80,6 @@ class SurveyFolioRelatedField(serializers.PrimaryKeyRelatedField):
             raise serializers.ValidationError(f'No se encontró una encuesta con el folio "{data}".')
         
 class SurveysSerializer(serializers.ModelSerializer):
-    folio = serializers.CharField(read_only=True)
     
     class Meta:
         model = Surveys
