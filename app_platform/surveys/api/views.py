@@ -47,7 +47,7 @@ class SurveysViewSet(viewsets.ModelViewSet):
     serializer_class = SurveysSerializer
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, ]
-    queryset = Surveys.objects.all()
+    queryset = Surveys.objects.filter(is_removed=False)
     serializer_classes = {
         'list': ListSurveysSerializer,
     }
@@ -91,6 +91,7 @@ class SurveysViewSet(viewsets.ModelViewSet):
             
         user = self.request.user
         instance.status = 'CANCELED'
+        instance.is_removed = True
         instance.deleted_at=timezone.now()
         instance.deleted_by=user
         instance.save()
