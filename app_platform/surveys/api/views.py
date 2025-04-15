@@ -90,14 +90,21 @@ class SurveysViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
             
         user = self.request.user
-        instance.status = 'CANCELED'
-        instance.is_removed = True
-        instance.deleted_at=timezone.now()
-        instance.deleted_by=user
-        instance.save()
 
-        # Retornar la respuesta exitosa sin eliminar físicamente
-        return Response({'message': 'La encuenta se cancelo'}, status=status.HTTP_200_OK)
+        if user.email == 'mario@vaissen.com':
+            instance.status = 'CANCELED'
+            instance.is_removed = True
+            instance.deleted_at=timezone.now()
+            instance.deleted_by=user
+            instance.save()
+
+            # Retornar la respuesta exitosa sin eliminar físicamente
+            return Response({'message': 'La encuenta se cancelo'}, status=status.HTTP_200_OK)
+        
+        return Response(
+                {"error": f"El usuario {user.email} no tiene permisos para eliminar."},
+                status=response_status.HTTP_400_BAD_REQUEST,
+            ) 
 
     @action(methods=['GET'], detail=True, permission_classes=[IsAuthenticated])
     def comments(self, request, slug=None):
